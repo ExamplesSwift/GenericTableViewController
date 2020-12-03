@@ -5,14 +5,17 @@ struct Episode {
     var title: String
 }
 
-final class EpisodesViewController : UITableViewController {
+final class EpisodesViewController<Item> : UITableViewController {
     
-    var episodes: [Episode] = []
+    var items: [Item] = []
     let reuseIdentifier = "Cell"
+    let configure : (UITableViewCell, Item) -> ()
     
-    init(episodes: [Episode]) {
+    
+    init(items: [Item], configure: @escaping (UITableViewCell, Item) -> ()) {
+        self.configure = configure
         super.init(style: .plain)
-        self.episodes = episodes
+        self.items = items
     }
     
     required init?(coder: NSCoder) {
@@ -25,14 +28,14 @@ final class EpisodesViewController : UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return episodes.count
+        return items.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
-                let item = episodes[indexPath.row]
-        cell.textLabel?.text = item.title
-                return cell
+        let item = items[indexPath.row]
+        configure(cell, item)
+        return cell
     }
 
 }
@@ -42,7 +45,9 @@ let sampleEpisodes = [Episode(title: "First Episode"),
                       Episode(title: "Second Episode"),
                       Episode(title: "Third Episode")]
 
-let episodeVC = EpisodesViewController(episodes: sampleEpisodes)
+let episodeVC = EpisodesViewController(items: sampleEpisodes,configure: {cell, item in
+    cell.textLabel?.text = item.title
+})
 
 episodeVC.view.frame = CGRect(x: 0, y: 0, width: 320, height: 480)
 
