@@ -1,3 +1,7 @@
+# GenericTableViewController
+
+
+```
 import UIKit
 import XCPlayground
 
@@ -93,4 +97,4 @@ episodeVC.title = "Season"
 nc.view.frame = CGRect(x: 0, y: 0, width: 320, height: 480)
 
 XCPlaygroundPage.currentPage.liveView = nc.view
-
+```
