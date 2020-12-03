@@ -10,17 +10,15 @@ struct Seson {
     var name: String
 }
 
-final class ItemsViewController<Item> : UITableViewController {
+final class ItemsViewController<Item, Cell: UITableViewCell> : UITableViewController {
     
     var items: [Item] = []
     let reuseIdentifier = "Cell"
-    let configure : (UITableViewCell, Item) -> ()
-    let cellClass: AnyClass
+    let configure : (Cell, Item) -> ()
     
     
-    init(items: [Item], cellClass: AnyClass = UITableViewCell.self, configure: @escaping (UITableViewCell, Item) -> ()) {
+    init(items: [Item], configure: @escaping (Cell, Item) -> ()) {
         self.configure = configure
-        self.cellClass = cellClass
         super.init(style: .plain)
         self.items = items
     }
@@ -30,7 +28,7 @@ final class ItemsViewController<Item> : UITableViewController {
     }
     
     override func viewDidLoad() {
-        tableView.register(cellClass, forCellReuseIdentifier: reuseIdentifier)
+        tableView.register(Cell.self, forCellReuseIdentifier: reuseIdentifier)
     }
 
     
@@ -39,7 +37,7 @@ final class ItemsViewController<Item> : UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! Cell
         let item = items[indexPath.row]
         configure(cell, item)
         return cell
@@ -47,13 +45,14 @@ final class ItemsViewController<Item> : UITableViewController {
 
 }
 
-
 let sampleEpisodes = [Episode(title: "First Episode"),
                       Episode(title: "Second Episode"),
                       Episode(title: "Third Episode")]
 
-let sampleSeasons = [Seson(cod: 1, name: "Summer"), Seson(cod: 2, name: "Winter"), Seson(cod: 3, name: "Nautum"), Seson(cod: 4, name: "Primavera")]
-
+let sampleSeasons = [Seson(cod: 1, name: "Summer"),
+                     Seson(cod: 2, name: "Winter"),
+                     Seson(cod: 3, name: "Nautum"),
+                     Seson(cod: 4, name: "Primavera")]
 
 final class SeasonCell: UITableViewCell {
     
@@ -68,7 +67,7 @@ final class SeasonCell: UITableViewCell {
 }
 
 
-let episodeVC = ItemsViewController(items: sampleSeasons, cellClass: SeasonCell.self,  configure: {cell, season in
+let episodeVC = ItemsViewController(items: sampleSeasons, configure: { (cell: SeasonCell, season) in
     cell.textLabel?.text = season.name
     cell.detailTextLabel?.text = "\(season.cod)"
 })
