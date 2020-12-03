@@ -5,7 +5,12 @@ struct Episode {
     var title: String
 }
 
-final class EpisodesViewController<Item> : UITableViewController {
+struct Seson {
+    var cod:  Int
+    var name: String
+}
+
+final class ItemsViewController<Item> : UITableViewController {
     
     var items: [Item] = []
     let reuseIdentifier = "Cell"
@@ -45,8 +50,12 @@ let sampleEpisodes = [Episode(title: "First Episode"),
                       Episode(title: "Second Episode"),
                       Episode(title: "Third Episode")]
 
-let episodeVC = EpisodesViewController(items: sampleEpisodes,configure: {cell, item in
-    cell.textLabel?.text = item.title
+let sampleSeasons = [Seson(cod: 1, name: "Summer"), Seson(cod: 2, name: "Winter"), Seson(cod: 3, name: "Nautum"), Seson(cod: 4, name: "Primavera")]
+
+
+let episodeVC = ItemsViewController(items: sampleSeasons,configure: {cell, season in
+    cell.textLabel?.text = season.name
+    cell.detailTextLabel?.text = "\(season.cod)"
 })
 
 episodeVC.view.frame = CGRect(x: 0, y: 0, width: 320, height: 480)
