@@ -15,6 +15,7 @@ final class ItemsViewController<Item, Cell: UITableViewCell> : UITableViewContro
     var items: [Item] = []
     let reuseIdentifier = "Cell"
     let configure : (Cell, Item) -> ()
+    var didSelect: (Item)->() = {_ in }
     
     
     init(items: [Item], configure: @escaping (Cell, Item) -> ()) {
@@ -31,6 +32,11 @@ final class ItemsViewController<Item, Cell: UITableViewCell> : UITableViewContro
         tableView.register(Cell.self, forCellReuseIdentifier: reuseIdentifier)
     }
 
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let item = items[indexPath.row]
+        didSelect(item)
+    }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
@@ -63,15 +69,27 @@ final class SeasonCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
 }
-
 
 let episodeVC = ItemsViewController(items: sampleSeasons, configure: { (cell: SeasonCell, season) in
     cell.textLabel?.text = season.name
     cell.detailTextLabel?.text = "\(season.cod)"
 })
 
-episodeVC.view.frame = CGRect(x: 0, y: 0, width: 320, height: 480)
+let nc = UINavigationController(rootViewController: episodeVC)
 
-XCPlaygroundPage.currentPage.liveView = episodeVC.view
+episodeVC.didSelect = { item in
+    let detailVC = ItemsViewController(items: sampleEpisodes) { (cell, episode) in
+        cell.textLabel?.text = episode.title
+    }
+    detailVC.title = "Detalles"
+    nc.pushViewController(detailVC, animated: true)
+}
+
+episodeVC.title = "Season"
+
+
+
+nc.view.frame = CGRect(x: 0, y: 0, width: 320, height: 480)
+
+XCPlaygroundPage.currentPage.liveView = nc.view
